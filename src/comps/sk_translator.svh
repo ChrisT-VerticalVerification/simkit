@@ -34,7 +34,7 @@
 // ~is_sequenced~ configuration settings.
 //
 // Passive Translation - In this mode inbound items are ~pushed~ into the 
-/      ~analysis_export~, subsequently translated into outbound items then 
+//      ~analysis_export~, subsequently translated into outbound items then 
 //     pushed out the ~analysis_port~.  Passive Translation is intended
 //     for analysis path contexts and is the operational mode when 
 //     ~is_active~ is UVM_PASSIVE.  This is the default operational mode.
@@ -187,6 +187,20 @@ virtual class sk_translator #(type t_inbound_item = uvm_sequence_item, type t_ou
   
   uvm_analysis_port #(t_outbound_item) outbound_tap;
   
+  //********************************************
+  //
+  // Private Properties & Methods
+  //
+  //********************************************
+
+  local uvm_tlm_analysis_fifo #(t_inbound_item)  inbound_fifo;  // For analysis path - to convert to pull semantic
+  local uvm_tlm_fifo          #(t_outbound_item) outbound_fifo; // For stimulus path
+
+  local int inbound_fh = 0;
+  local int outbound_fh = 0;
+  
+  local int translate_request = 0; // For background, possibly blocking, translation initiated by a try_inbound_item 
+
   //
   // Property registration
   //
@@ -219,11 +233,8 @@ virtual class sk_translator #(type t_inbound_item = uvm_sequence_item, type t_ou
     is_sequenced      = 0;
     has_inbound_tap   = 0;
     has_outbound_tap  = 0;
-    inbound_fh        = 0;
-    outbound_fh       = 0;
     inbound_log       = "";
     outbound_log      = "";
-    translate_request = 0;
   endfunction
   
   //
@@ -327,20 +338,6 @@ virtual class sk_translator #(type t_inbound_item = uvm_sequence_item, type t_ou
     else
       outbound_fifo.put(t); // does not block
   endtask
-
-  //********************************************
-  //
-  // Private Properties & Methods
-  //
-  //********************************************
-
-  local uvm_tlm_analysis_fifo #(t_inbound_item)  inbound_fifo;  // For analysis path - to convert to pull semantic
-  local uvm_tlm_fifo          #(t_outbound_item) outbound_fifo; // For stimulus path
-
-  local int inbound_fh;
-  local int outbound_fh;
-  
-  local int translate_request; // For background, possibly blocking, translation initiated by a try_inbound_item 
 
   //
   // UVM Phases

@@ -35,7 +35,7 @@ import uvm_pkg::*;
 //
 // Not part of UVM (yet), so include it separately
 //
-`include "uvm_translator.sv"
+`include "sk_translator.svh"
 
 //
 // Create a data class to translate
@@ -64,7 +64,7 @@ endclass
 //
 // Create a translator that arbitrarily changes the width of a bitstream
 //
-class t_gearbox #(BWI, BWO) extends uvm_translator #(t_bitstream_item#(BWI),t_bitstream_item#(BWO));
+class t_gearbox #(BWI, BWO) extends sk_translator #(t_bitstream_item#(BWI),t_bitstream_item#(BWO));
 
   t_bitstream_item#(BWO) ob;
   int j;
